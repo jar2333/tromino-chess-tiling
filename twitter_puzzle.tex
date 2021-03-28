@@ -1,0 +1,760 @@
+\documentclass{article}
+\usepackage{amsfonts, amsthm, graphicx, chessboard, skak, color, hyperref, array, lmodern,amsmath,amssymb}
+\usepackage{a4wide}
+\usepackage[LSBC3,T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[margin=1in]{geometry}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\graphicspath{ {./twitter-puzzle/} }
+
+\title{On Infinite Chess Puzzle}
+\author
+{
+José A. Ramos
+}
+
+
+\begin{document}
+    \maketitle
+    
+    \section*{The Puzzle}
+
+    \includegraphics{the_puzzle} \\
+    \textit{thanks to @s5bug for the interesting puzzle!}
+
+    \section*{Setup}
+
+    First, I make some assumptions:
+    \begin{enumerate}
+    \item "Eliminate all the pieces" is taken to mean that, for any arbitrary finite subset of all white pieces on the infinite chessboard, the black king can eat every piece in that subset, assuming the king starts in the same, fixed position regardless of subset chosen. 
+    \item The "density" of white pieces in the infinite chessboard is defined as the limit of the sequence of densities of a well-defined sequence of $n \times n$ chessboards, as $n \to \infty$. At every $n$, the king must be able to eliminate all white pieces in the $n \times n$ board.
+    \item As per @s5bug's rules, the black king must be in the center of an entire plane, not just at the edge of a half-plane or corner of a quarter-plane.
+    \item The orientation is downwards, for simplicity.
+    \end{enumerate}
+
+    \section*{Thought Process: Trominoes}
+    When I started thinking about this problem, I envisioned the infinite chessboard, and the ideal scenario, where every single position except one is occupied by white:
+
+    %\begin{center}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \def\myfen{PPPPPPPPPPP/PPPPPPPPPPP/PPPPPPPPPPP/PPPPPPPPPPP/PPPPPPPPPPP/PPPPPkPPPPP/PPPPPPPPPPP/PPPPPPPPPPP/PPPPPPPPPPP/PPPPPPPPPPP/PPPPPPPPPPP} %the / are "linebreaks"
+    \chessboard[
+        maxfield=k11,
+        clearboard,
+        startfen=a11,
+        setfen=\myfen,
+        addfen=\myfen]
+   %\end{center}
+
+    This in turn reminded me of the \textit{mutilated chess board problem}, and its solution, in the form of \textit{Golomb's tromino theorem}:
+
+    \newtheorem{theorem}{Theorem}
+    \begin{theorem}
+    A unit square has been marked apart from a $2^n \times 2^n$ board. The rest of the board can be tiled with L-shaped trominos.
+    \end{theorem} 
+
+    The inductive proof of this theorem can be found \href{https://www.cut-the-knot.org/Curriculum/Geometry/Tromino.shtml}{here}. In the proof, the board is divided into 4 sub-boards, and the inductive hypothesis applied to each. \par
+    This proof lets us see a special case, where the removed square is the bottom-left square in the top-right sub-board. Denote this square the \textit{king square}. This special case has a very natural construction: we define a $2^{n-1} \times 2^{n-1}$ board with one corner square marked apart. We then make 4 copies of this board, rotate them, and make them adjacent so that the marked corners form a $2 \times 2$ square in the center. Then, we add one more tromino to the marked squares, and what is left behind is a single marked square, we let this be the king square. Here is the  $4 \times 4$ board example:
+
+    \begin{center}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1},
+        setblack={Kb2}]
+    \setboardfontencoding{LSBC3} \\
+    1) Base board
+    \end{center}
+
+    %SHOW PIECES
+    \begin{center}
+    \begin{tabular}{cccc}
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a2, b2-b2}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a2-a2, b1-b2}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a1, b1-b2}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    \end{tabular} \\
+    2) Four copies rotated
+    \end{center}
+
+    %SHOW FINAL BOARD
+    \begin{center}
+    \begin{tabular}{c@{\hskip 0.4in}cc}
+    \begin{minipage}{0.2\textwidth}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c4-c4, d3-d4},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1},
+        setblack={Kc3}]
+    \end{minipage}
+    &
+    $\to$
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c4-c4, d3-d4},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1},
+        setblack={Kc3}]
+    \end{minipage}
+    \end{tabular} \\
+    3) Joined and Final $4 \times 4$ board with king square
+    \end{center}
+
+    Notice the coloring given to each tromino. We assign colors to a tromino as such:
+   \begin{itemize}
+   \item The tromino is created in step 2: 
+	\begin{itemize}
+	\item We define equivalence classes for trominoes, under 180 degree rotation. Clearly, there are 2 such classes. Trominoes in one are colored red, trominoes in the other yellow.
+	\end{itemize}
+   \item The tromino is created in step 3:
+	\begin{itemize}
+	\item The tromino is colored blue, and remains as such regardless of rotation.
+	\end{itemize}
+   \end{itemize}
+
+    To construct the $2^{n-1} \times 2^{n-1}$ sub-board itself, a similar recursive procedure can be done to construct it starting from the $2 \times 2$ base case. For example, to build the $8 \times 8$ board with king square, we need to construct the $4 \times 4$ sub-board as such:
+
+    %base case
+    \begin{center}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1},
+        setblack={Kb2}]
+    \setboardfontencoding{LSBC3} \\
+    1) Base case
+    \end{center}
+
+    %SHOW PIECES
+    \begin{center}
+    \begin{tabular}{ccc}
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a2, b2-b2}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a1, b1-b2}]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    \end{tabular} \\
+    2) Three rotations
+    \end{center}
+
+    %SHOW FINAL BOARD
+    \begin{center}
+    \begin{tabular}{c@{\hskip 0.4in}cc}
+    \begin{minipage}{0.2\textwidth}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1}]
+    \end{minipage}
+    &
+    $\to$
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1}]
+    \end{minipage}
+    \end{tabular} \\
+    3) Final sub-board
+    \end{center}
+
+    We can then repeat the board construction procedure previously described to construct an $8 \times 8$ board with king square. \par
+
+    Henceforth, we denote the $2^n \times 2^n$ board with king square an \textit{n-board}. Additionally, we denote the $2^{n-1} \times 2^{n-1}$ sub-boards of an n-board as the \textit{n-components}. We can visualize n-boards and n-components for $2 \leq n \leq 4$:
+
+    \begin{table}
+    \centering
+    \begin{tabular}{|M{0.7cm}|M{8cm}|M{8cm}|}
+    \hline
+    n
+    &
+    n-board
+    &
+    n-component
+    \\ \hline
+    2
+    &
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c4-c4, d3-d4},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1},
+        setblack={Kc3}]
+    &
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1}]
+    \setboardfontencoding{LSBC3}
+    \\ \hline
+    3
+    &
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=h8,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3, a5-a6, b5-b5, d7-d8, c8-c8, e6-e6, f5-f6, g8-g8, h7-h8, g4-g4, h3-h4, e1-e2, f1-f1},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2, b6-b7, c7-c7, f7-f7, g6-g7, f2-f2, g2-g3, d4-d5, e4-e4},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1, a7-a8, b8-b8, c5-c6, d6-d6, e7-e8, f8-f8, g5-g5, h5-h6, g1-g1, h1-h2, e3-e3, f3-f4 },
+        setblack={Ke5}]
+    &
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1}]
+    \\ \hline
+    4
+    &
+    4-board too big to show
+    &
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=h8,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3, a5-a6, b5-b5, d7-d8, c8-c8, e5-e6, f5-f5, g7-g8, h7-h7, g4-g4, h3-h4, e1-e2, f1-f1},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2, b6-b7, c7-c7, f6-f7, g6-g6, f2-f2, g2-g3, d4-d5, e4-e4},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1, a7-a8, b8-b8, c5-c6, d6-d6, e7-e8, f8-f8, g5-g5, h5-h6, g1-g1, h1-h2, e3-e3, f3-f4 }]
+    \\ \hline
+    \end{tabular}
+    \caption{table of n-boards and n-components}
+    \end{table}
+
+    Thus, the construction of n-boards is simple: recursively construct the necessary n-component, and then use it to create the n-board. In fact, these two structures are very similar. Notice, how the top-right n-component of an n-board is the only difference between an n-board and an (n+1)-component. That particular n-component is just flipped along the diagonal. A useful remark:
+
+    \newtheorem*{remark}{Remark}
+    \begin{remark}
+    An (n+1)-component can be obtained from an n-board by rotating the top-right n-component 180 degrees.
+    \end{remark}
+
+    And thus:
+    \begin{remark}
+    An (n+1)-board can be obtained from an n-board by rotating the top-right n-component of the n-board 180 degrees, and using the resulting (n+1)-component to construct the (n+1)-board.
+    \end{remark}
+    Also, we highlight an important lemma:
+    \newtheorem{lemma}[theorem]{Lemma}
+    \begin{lemma}
+    When flipping the top-right n-component of an n-board, the number of red, yellow, and blue trominos in that n-component stays the same.
+    \end{lemma}
+    \begin{proof}
+    For red and yellow trominoes, rotating by 180 degrees does not change the coloring, as the rotated tromino remains in the same equivalence class. For blue trominoes, rotation does not affect their color.
+    \end{proof}
+
+    It is also easy to see that:
+    \begin{remark}
+    As $n \to \infty$, the n-board tiles an arbitrarily big subset of the plane, and the king square is not at the edge of any n-board. 
+    \end{remark}
+
+    \section*{Thought Process: Checks}
+
+    At first, I wondered: what 3 white chess pieces fit in a tromino such that the black king can eat all of them from outside? Had in mind maybe some inductive idea, but already knew adjacency from other trominoes would have to be accounted for. Regardless, I came up with the following arrangements, among others not shown:
+
+    \begin{center}
+    \begin{tabular}{cc}
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1},
+        startfen=a2,
+        setfen=Pk/NP,
+        addfen=Pk/NP]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a1, b1-b2},
+        startfen=a2,
+        setfen=kN/NP,
+        addfen=kN/NP]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    \end{tabular} \\
+    Two particular arrangements
+    \end{center}
+
+   After quite a bit of experimenting, I noticed that these two arrangements, if applied to n-boards, are almost sufficient to allow the king to eat an arbitrary amount of white pieces. This is due to the fact that it yields an alternating arrangement of pawns and knights. Firstly, define arrangements for all 4 rotations of the L-tromino:
+
+    \begin{center}
+    \begin{tabular}{cccc}
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1},
+        startfen=a2,
+        setfen=Pk/NP,
+        addfen=Pk/NP]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a1, b1-b2},
+        startfen=a2,
+        setfen=kN/NP,
+        addfen=kN/NP]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a2-a2, b1-b2},
+        startfen=a2,
+        setfen=PN/kP,
+        addfen=PN/kP]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    &
+    \begin{minipage}{0.2\textwidth}
+    \setboardfontencoding{LSBC3}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=b2,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a1-a1, b1-b2},
+        startfen=a2,
+        setfen=kN/NP,
+        addfen=kN/NP]
+    \setboardfontencoding{LSBC3}
+    \end{minipage}
+    \end{tabular} \\
+    Arrangements assigned to all 4 tromino rotations
+    \end{center}
+
+Since a tromino is colored red or yellow depending on which of the two equivalence classes under 180 degree rotation it belongs to, two tiles which are both red or both yellow will have the same number of pawns and knights, and a yellow and red tromino have different numbers of pawns and knights. On the other hand, blue tiles can have any rotation, and have their arrangement assigned according to their current rotation. Now, consider the 3-board:
+
+    %Proof: consider that tromino is a rep-tile, and every iteration yields diamond lattice of horses and pawns. Then, reformulate n-board construction with rep-tiling.
+    \def\arrangement{PNPNPNPN/NPNPNPNP/PNPNPNPN/NPNPkPNP/PNPNPNPN/NPNPNPNP/PNPNPNPN/NPNPNPNP}
+
+    \begin{center}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=h8,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3, a5-a6, b5-b5, d7-d8, c8-c8, e6-e6, f5-f6, g8-g8, h7-h8, g4-g4, h3-h4, e1-e2, f1-f1},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2, b6-b7, c7-c7, f7-f7, g6-g7, f2-f2, g2-g3, d4-d5, e4-e4},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1, a7-a8, b8-b8, c5-c6, d6-d6, e7-e8, f8-f8, g5-g5, h5-h6, g1-g1, h1-h2, e3-e3, f3-f4 },
+        startfen=a8,
+        setfen=\arrangement,
+        addfen=\arrangement]
+
+    Filled 3-board
+    \end{center}
+
+    With this arrangement, we can eat arbitrarily many knights, since both pawns and knights only attack spaces with pawns. After eating sufficient knights, we run into a problem: every pawn besides the uppermost ones is protected by another pawn. Sure, in the finite n-boards, the king can just eat every knight and then eat all the pawns top-down. However, in the limit, it does not really make sense to "reach the top", as we are dealing with a plane. Perhaps allowing infinite move steps allows this strategy in the infinite board, but we will pursue a different strategy. By removing some pawns, we can remove enough pawn protection to allow the king to move sufficiently upwards to a certain spot and eat every pawn below said spot. A naive approach perhaps would be to remove one entire row of pawns. On the 3-board:
+
+    \def\rowclear{PNPNPNPN/N1N1N1N1/PNPNPNPN/NPNPkPNP/PNPNPNPN/NPNPNPNP/PNPNPNPN/NPNPNPNP}
+
+    \begin{center}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=h8,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3, a5-a6, b5-b5, d7-d8, c8-c8, e6-e6, f5-f6, g8-g8, h7-h8, g4-g4, h3-h4, e1-e2, f1-f1},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2, b6-b7, c7-c7, f7-f7, g6-g7, f2-f2, g2-g3, d4-d5, e4-e4},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1, a7-a8, b8-b8, c5-c6, d6-d6, e7-e8, f8-f8, g5-g5, h5-h6, g1-g1, h1-h2, e3-e3, f3-f4 },
+        startfen=a8,
+        setfen=\rowclear,
+        addfen=\rowclear]
+
+    2-row removal
+    \end{center}
+
+    There are a couple of issues with this approach:
+    \begin{itemize}
+    \item At the limit, the row would be infinitely long.
+    \item At the limit, columns would also be infinitely long, so these row clearings would need to be periodic. If not, then there would not be at least one row clearing that has any given pawn under it. They can be separated by some arbitrary length $t$, and the density would depend on this parameter. This can be clearly seen if we map 1-to-1 every row in an n-board to its corresponding element in the set $A = \{1, 2, ..., 2^n \}$. The n-board with pawns removed every $t$ rows would correspond to removing every multiple of $t$ from A. Thus, the number of cleared rows is given by:
+   $$\left\lfloor \frac{2^n}{t} \right\rfloor$$
+     It follows, the ratio of cleared rows to total rows is given by the formula:
+   $$d_n = \frac{\left\lfloor \frac{2^n}{t} \right\rfloor}{2^n} = \frac{1}{t} - \frac{frac(\frac{2^n}{t})}{2^n}$$
+    Which in turn implies:
+    $$\frac{1}{t} - \frac{1}{2^n}  < d_n \leq \frac{1}{t}$$
+    At the limit $n \to \infty$, $d_n = \frac{1}{t}$. However, t itself cannot be taken to to the limit $t \to \infty$ since it denotes a finite number of steps that separate each empty row. Since we disallow infinite step moves on the part of our king, this approach leaves us with limit density $1 - d_n = \frac{t-1}{t} < 1$ for some finite integer t.
+    \end{itemize}
+
+   It is natural to ask: can we perhaps naturally use the trominoes themselves to define pawn removal that leads to arbitrary pawn edibility? I have found such an arrangement. Note that, in our n-boards and n-components, the tromino added at the last step of the construction is colored blue. \textit{We can remove the pawns in all non-blue trominoes above the king square to guarantee the edibility of arbitrary number of pawns}. The reason for only removing the pawns above the king square, is that removing any below does not affect the edibility of the pawns below the king square. Recall, what impeded edibility was an infinite arrangement of pawns from above protecting every pawn below it. If any arbitrary set of pawns above the king square can be eaten, the protection for those below ceases, and they can also be eaten arbitrarily. Denote this rule \textit{blue-removal.} Here is the removal rule applied to the 3-board: 
+
+    %This works because of the rep-tile property: every blue pawn is protected by non-blue pawns, and every blue pawn protects non-blue pawns. 
+
+    \def\blueclear{1N1N1N1N/NPN1NPN1/1N1N1NPN/N1NPk1N1/PNPNPNPN/NPNPNPNP/PNPNPNPN/NPNPNPNP}
+
+    \begin{center}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=h8,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c3-c4, d3-d3, a5-a6, b5-b5, d7-d8, c8-c8, e6-e6, f5-f6, g8-g8, h7-h8, g4-g4, h3-h4, e1-e2, f1-f1},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2, b6-b7, c7-c7, f7-f7, g6-g7, f2-f2, g2-g3, d4-d5, e4-e4},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1, a7-a8, b8-b8, c5-c6, d6-d6, e7-e8, f8-f8, g5-g5, h5-h6, g1-g1, h1-h2, e3-e3, f3-f4 },
+        startfen=a8,
+        setfen=\blueclear,
+        addfen=\blueclear] \\ 
+    Removal of non-blue pawns
+    \end{center}
+
+    Beyond just blue and non-blue, note that we have also colored trominoes red and yellow. These two colors correspond to the different pawn and knight arrangements. Thus, under blue-removal, the color of the tromino corresponds to the number of pawns removed in that tromino:
+    \begin{itemize}
+    \item red $\to$ 2 pawns removed
+    \item yellow $\to$ 1 pawn removed
+    \item blue $\to$ 0 pawns removed
+    \end{itemize}
+    Let $r_n, y_n, b_n$ denote the number of red, yellow, and blue trominoes on the n-board, respectively. It follows, the total number of pawns removed in the n-board is given by the formula: \newline
+    $$E_n = \frac{1}{2}(2r_n + y_n)$$ \newline %this requires demonstrating that board is symmetric colorwise up and down. Can be shown through recursive construction of n-boards. In prev section
+    The count is halved, since the number of red and yellow trominoes below and above the king square is the same. In the finite n-board, $E_n$ is thus also the \textit{the amount of empty squares on the board}. If we let $T_n$ be the total number of squares in the n-board. Clearly, we can express it in terms of the number of trominoes: \newline
+    $$ T_n = 3(r_n + y_n + b_n) + 1$$
+Thus, we define the following formula for density: \newline
+    $$D_n = \frac{T_n - E_n}{T_n} = 1 - \frac{ E_n}{T_n} = 1 - \frac{ 2r_n + y_n}{6(r_n + y_n + b_n) + 2}$$ \newline
+
+   We define $T_n$ and $R_n$ recursively. Consider the base case $n = 2$:
+ 
+    \begin{center}
+    \setchessboard{showmover=false}
+    \newgame
+    \chessboard[
+        maxfield=d4,
+        clearboard,
+        coloremph,
+        fieldmaskcolor=red,
+        fieldcolor=red,
+        emphareas={a1-a2, b1-b1, c4-c4, d3-d4},
+        coloremph,
+        fieldmaskcolor=blue,
+        fieldcolor=blue,
+        emphareas={b2-b3, c2-c2},
+        coloremph,
+        fieldmaskcolor=yellow,
+        fieldcolor=yellow,
+        emphareas={a3-a4, b4-b4, d1-d2, c1-c1},
+        startfen=a4,
+        setfen=1N1N/NPk1/PNPN/NPNP,
+        addfen=1N1N/NPk1/PNPN/NPNP] \\
+     Base case
+    \end{center}
+
+    Note that:
+   \begin{itemize}
+   \item $r_2 = 2$
+   \item $y_2 = 2$
+   \item $b_2 = 1$
+   \item $E_2 = \frac{1}{2}(2r_2 + y_2) = 3$
+   \item $T_2 = 3(r_2 + y_2 + b_2) + 1 = 16$
+   \item $D_2 = 1 - \frac{3}{16} = \frac{13}{16}$
+   \end{itemize}
+    
+   Given an n-board, we can create an (n+1)-board by:
+   \begin{enumerate}
+   \item Rotating the top-right n-component of the n-board by 180 degrees. This creates an (n+1)-component.
+   \item Creating 4 copies of the (n+1)-component.
+   \item Rotating the 4 copies 0, 90, 180, and 270 degrees.
+   \item Joining the 4 (n+1)-components.
+   \end{enumerate}
+
+   After this procedure:
+   \begin{itemize}
+   \item The number of red and yellow trominoes is multiplied by 4.
+   \item The number of blue trominoes is multiplied by 4, and 1 is added.
+   \end{itemize}
+
+   Thus, we obtain recursive definitions for $r_n$, $y_n$, and $b_n$:
+   $$r_n = 4r_{n-1}$$
+   $$y_n = 4y_{n-1}$$
+   $$b_n = 4b_{n-1} + 1$$
+
+   And hence:
+
+$$E_n = \frac{1}{2}(2(4r_{n-1}) + 4y_{n-1}) = 4r_{n-1} + 2y_{n-1}$$
+$$T_n = 3(4r_{n-1} + 4y_{n-1} +4b_{n-1} + 1) + 1 = 12r_{n-1} + 12y_{n-1} +12b_{n-1} + 4$$
+And finally:
+\begin{align*}
+D_n &= 1 - \frac{4r_{n-1} + 2y_{n-1}}{12r_{n-1} + 12y_{n-1} +12b_{n-1} + 4} \\
+ &= 1 - \frac{2r_{n-1} + y_{n-1}}{6r_{n-1} + 6y_{n-1} +6b_{n-1} + 2} \\ 
+ &= 1 - \frac{2r_{n-1} + y_{n-1}}{2(3(r_{n-1} + y_{n-1} +b_{n-1}) + 1)) + 1} \\ 
+ &= 1 - \frac{2E_{n-1}}{2(T_{n-1}) + 1} \\
+ &= 1 - \frac{E_{n-1}}{T_{n-1} + \frac{1}{2}} 
+\end{align*}   
+
+   We can then find the non-recursive formula for $D_n$:
+   $$D_n = 1 - \frac{E_2}{T_2 + \frac{1}{2}(n-2)} = 1 - \frac{3}{16 + \frac{1}{2}(n-2)}$$
+Clearly, as $n \to \infty$, then $\frac{3}{16 + \frac{1}{2}(n-2)} \to 0$. Thus, $D_n \to 1$. $\square$
+\\
+Thus, we prove that:
+\begin{itemize}
+\item For all $n$, the king can eliminate every piece in an n-board. 
+\item The king starts in the king square, always at the "center" (one of the 4 center squares) of the n-board.
+\item At the limit $n \to \infty$, the density of white pieces is 1. In other words, there are white pieces \textit{almost everywhere}.
+\end{itemize}
+    \newpage
+
+   \end{document}
